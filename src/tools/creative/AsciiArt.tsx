@@ -1,0 +1,70 @@
+'use client';
+
+import { useState } from 'react';
+import { showToast } from '@/components/Toast';
+
+const FONT: Record<string, string[]> = {
+  A: ['  █  ', ' █ █ ', '█████', '█   █', '█   █'],
+  B: ['████ ', '█   █', '████ ', '█   █', '████ '],
+  C: [' ████', '█    ', '█    ', '█    ', ' ████'],
+  D: ['████ ', '█   █', '█   █', '█   █', '████ '],
+  E: ['█████', '█    ', '████ ', '█    ', '█████'],
+  F: ['█████', '█    ', '████ ', '█    ', '█    '],
+  G: [' ████', '█    ', '█  ██', '█   █', ' ████'],
+  H: ['█   █', '█   █', '█████', '█   █', '█   █'],
+  I: ['█████', '  █  ', '  █  ', '  █  ', '█████'],
+  J: ['█████', '   █ ', '   █ ', '█  █ ', ' ██  '],
+  K: ['█  █ ', '█ █  ', '██   ', '█ █  ', '█  █ '],
+  L: ['█    ', '█    ', '█    ', '█    ', '█████'],
+  M: ['█   █', '██ ██', '█ █ █', '█   █', '█   █'],
+  N: ['█   █', '██  █', '█ █ █', '█  ██', '█   █'],
+  O: [' ███ ', '█   █', '█   █', '█   █', ' ███ '],
+  P: ['████ ', '█   █', '████ ', '█    ', '█    '],
+  Q: [' ███ ', '█   █', '█ █ █', '█  █ ', ' ██ █'],
+  R: ['████ ', '█   █', '████ ', '█ █  ', '█  █ '],
+  S: [' ████', '█    ', ' ███ ', '    █', '████ '],
+  T: ['█████', '  █  ', '  █  ', '  █  ', '  █  '],
+  U: ['█   █', '█   █', '█   █', '█   █', ' ███ '],
+  V: ['█   █', '█   █', ' █ █ ', ' █ █ ', '  █  '],
+  W: ['█   █', '█   █', '█ █ █', '██ ██', '█   █'],
+  X: ['█   █', ' █ █ ', '  █  ', ' █ █ ', '█   █'],
+  Y: ['█   █', ' █ █ ', '  █  ', '  █  ', '  █  '],
+  Z: ['█████', '   █ ', '  █  ', ' █   ', '█████'],
+  ' ': ['     ', '     ', '     ', '     ', '     '],
+  '0': [' ███ ', '█  ██', '█ █ █', '██  █', ' ███ '],
+  '1': ['  █  ', ' ██  ', '  █  ', '  █  ', '█████'],
+  '!': ['  █  ', '  █  ', '  █  ', '     ', '  █  '],
+};
+
+export default function AsciiArt() {
+  const [text, setText] = useState('HELLO');
+  const [result, setResult] = useState('');
+
+  const generate = () => {
+    const upper = text.toUpperCase();
+    const lines = ['', '', '', '', ''];
+    for (const ch of upper) {
+      const glyph = FONT[ch] || FONT[' '];
+      for (let r = 0; r < 5; r++) {
+        lines[r] += glyph[r] + ' ';
+      }
+    }
+    setResult(lines.join('\n'));
+  };
+
+  return (
+    <div>
+      <label className="f-label">텍스트 입력</label>
+      <div className="f-row">
+        <input className="f-input" style={{ flex: 1 }} placeholder="HELLO" value={text} onChange={e => setText(e.target.value)} maxLength={12} />
+        <button className="f-btn" onClick={generate}>🔠 생성</button>
+        {result && <button className="f-btn f-btn-outline" onClick={() => { navigator.clipboard.writeText(result); showToast('복사됨!'); }}>복사</button>}
+      </div>
+      {result && (
+        <pre style={{ background: '#1e1e2e', padding: 16, borderRadius: 10, marginTop: 12, fontSize: 10, lineHeight: 1.2, overflowX: 'auto', color: '#a5b4fc', fontFamily: 'monospace' }}>
+          {result}
+        </pre>
+      )}
+    </div>
+  );
+}

@@ -1,0 +1,25 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+
+let showToastFn: ((msg: string) => void) | null = null;
+
+export function showToast(msg: string) {
+  if (showToastFn) showToastFn(msg);
+}
+
+export default function ToastContainer() {
+  const [message, setMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    showToastFn = (msg: string) => {
+      setMessage(msg);
+      setTimeout(() => setMessage(null), 2500);
+    };
+    return () => { showToastFn = null; };
+  }, []);
+
+  if (!message) return null;
+
+  return <div className="toast">{message}</div>;
+}
