@@ -29,38 +29,25 @@ export default function ToolModal({ tool, onClose, children }: ToolModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[200] flex items-start justify-center pt-[5vh] pb-[5vh]"
+      className="modal-overlay"
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-
-      {/* Modal */}
-      <div
-        className="relative w-[95%] max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-white/[0.08]"
-        style={{ background: '#12121a', boxShadow: '0 32px 64px rgba(0,0,0,0.6)' }}
-      >
+      <div className="modal-container">
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-white/[0.06]"
-          style={{ background: 'rgba(18,18,26,0.95)', backdropFilter: 'blur(12px)' }}>
+        <div className="modal-header">
           <div className="flex items-center gap-3">
-            <span className="text-2xl">{tool.icon}</span>
+            <span className="text-[26px]">{tool.icon}</span>
             <div>
-              <h2 className="text-lg font-bold text-slate-200">{tool.title}</h2>
-              <p className="text-xs text-slate-500">{tool.desc}</p>
+              <h2 className="text-[18px] font-semibold" style={{ color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>{tool.title}</h2>
+              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{tool.desc}</p>
             </div>
             {tool.aiPowered && <span className="ai-badge">Gemini AI</span>}
           </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-all cursor-pointer text-lg"
-          >
-            x
-          </button>
+          <button className="modal-close" onClick={onClose}>✕</button>
         </div>
 
         {/* Body */}
-        <div className="p-6">
+        <div className="modal-body">
           {children}
         </div>
       </div>

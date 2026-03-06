@@ -13,6 +13,21 @@ export default function Home() {
   const [category, setCategory] = useState('all');
   const [search, setSearch] = useState('');
   const [activeTool, setActiveTool] = useState<ToolDef | null>(null);
+  const [theme, setTheme] = useState('dark');
+
+  // Load saved theme
+  useEffect(() => {
+    const saved = localStorage.getItem('theme') || 'dark';
+    setTheme(saved);
+    document.documentElement.setAttribute('data-theme', saved);
+  }, []);
+
+  const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  };
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -39,17 +54,17 @@ export default function Home() {
 
   return (
     <>
-      <Header searchQuery={search} onSearch={setSearch} toolCount={filtered.length} />
+      <Header searchQuery={search} onSearch={setSearch} toolCount={filtered.length} theme={theme} onToggleTheme={toggleTheme} />
       <CategoryNav current={category} onSelect={setCategory} />
 
-      <main className="mt-[128px] px-8 pb-20 max-w-[1440px] mx-auto">
+      <main className="mt-[128px] max-md:mt-[110px] px-8 max-md:px-4 pb-20 max-w-[1440px] mx-auto">
         {filtered.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="text-5xl mb-4">🔍</div>
-            <p className="text-slate-500">검색 결과가 없습니다</p>
+          <div className="text-center py-20" style={{ gridColumn: '1 / -1' }}>
+            <div className="text-[56px] mb-4" style={{ filter: 'grayscale(0.5)' }}>🔍</div>
+            <p className="text-[15px] font-medium" style={{ color: 'var(--text-dim)' }}>검색 결과가 없습니다</p>
           </div>
         ) : (
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(290px,1fr))] gap-4">
+          <div className="grid gap-4 max-md:gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))' }}>
             {filtered.map(tool => (
               <ToolCard key={tool.id} tool={tool} onClick={() => setActiveTool(tool)} />
             ))}

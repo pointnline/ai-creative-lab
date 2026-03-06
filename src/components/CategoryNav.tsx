@@ -9,15 +9,14 @@ interface CategoryNavProps {
 
 export default function CategoryNav({ current, onSelect }: CategoryNavProps) {
   return (
-    <nav className="fixed top-16 left-0 right-0 z-40 flex gap-2 px-8 py-3 overflow-x-auto"
-      style={{ background: 'rgba(10,10,15,0.88)', backdropFilter: 'blur(24px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+    <nav
+      className="fixed top-16 max-md:top-14 left-0 right-0 z-[99] flex gap-2 px-8 max-md:px-4 py-3 overflow-x-auto"
+      style={{ background: 'var(--nav-bg)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', borderBottom: '1px solid var(--border-subtle)', scrollbarWidth: 'none' }}
+    >
       <button
         onClick={() => onSelect('all')}
-        className={`px-4 py-2 rounded-full text-[13px] font-medium whitespace-nowrap border transition-all cursor-pointer ${
-          current === 'all'
-            ? 'bg-gradient-to-r from-indigo-500 to-violet-500 border-transparent text-white shadow-[0_2px_12px_rgba(99,102,241,0.3)]'
-            : 'border-[#252540] text-slate-400 hover:border-indigo-500/40 hover:text-slate-200 hover:bg-indigo-500/8 bg-transparent'
-        }`}
+        className={`cat-pill ${current === 'all' ? 'active' : ''}`}
+        style={current === 'all' ? { background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', borderColor: 'transparent', color: 'white', boxShadow: '0 2px 12px rgba(99,102,241,0.3)' } : undefined}
       >
         🎯 전체
       </button>
@@ -25,12 +24,8 @@ export default function CategoryNav({ current, onSelect }: CategoryNavProps) {
         <button
           key={key}
           onClick={() => onSelect(key)}
-          className={`px-4 py-2 rounded-full text-[13px] font-medium whitespace-nowrap border transition-all cursor-pointer ${
-            current === key
-              ? 'border-transparent text-white shadow-lg'
-              : 'border-[#252540] text-slate-400 hover:border-indigo-500/40 hover:text-slate-200 bg-transparent'
-          }`}
-          style={current === key ? { background: `linear-gradient(135deg, ${cat.color}, ${cat.color}cc)` } : undefined}
+          className={`cat-pill ${current === key ? 'active' : ''}`}
+          style={current === key ? { background: `linear-gradient(135deg, ${cat.color}, ${cat.color}cc)`, borderColor: 'transparent', color: 'white', boxShadow: `0 2px 12px ${cat.color}44` } : undefined}
         >
           {cat.icon} {cat.name}
         </button>
