@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import Header from '@/components/Header';
 import CategoryNav from '@/components/CategoryNav';
+import Landing from '@/components/Landing';
 import ToolCard from '@/components/ToolCard';
 import ToolModal from '@/components/ToolModal';
 import ToastContainer from '@/components/Toast';
@@ -14,12 +15,16 @@ export default function Home() {
   const [search, setSearch] = useState('');
   const [activeTool, setActiveTool] = useState<ToolDef | null>(null);
   const [theme, setTheme] = useState('dark');
+  const [showLanding, setShowLanding] = useState(true);
+  const toolsRef = useRef<HTMLElement>(null);
 
-  // Load saved theme
   useEffect(() => {
     const saved = localStorage.getItem('theme') || 'dark';
     setTheme(saved);
     document.documentElement.setAttribute('data-theme', saved);
+
+    const visited = localStorage.getItem('visited');
+    if (visited) setShowLanding(false);
   }, []);
 
   const toggleTheme = () => {
@@ -27,6 +32,14 @@ export default function Home() {
     setTheme(next);
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('theme', next);
+  };
+
+  const handleGetStarted = () => {
+    setShowLanding(false);
+    localStorage.setItem('visited', '1');
+    setTimeout(() => {
+      toolsRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
   };
 
   const filtered = useMemo(() => {
@@ -55,9 +68,16 @@ export default function Home() {
   return (
     <>
       <Header searchQuery={search} onSearch={setSearch} toolCount={filtered.length} theme={theme} onToggleTheme={toggleTheme} />
-      <CategoryNav current={category} onSelect={setCategory} />
 
-      <main className="mt-[128px] max-md:mt-[110px] px-8 max-md:px-4 pb-20 max-w-[1440px] mx-auto">
+      {showLanding && <Landing onGetStarted={handleGetStarted} />}
+
+      {!showLanding && <CategoryNav current={category} onSelect={setCategory} />}
+
+      <main
+        ref={toolsRef}
+        className={`px-8 max-md:px-4 pb-20 max-w-[1440px] mx-auto ${showLanding ? 'mt-8' : 'mt-[128px] max-md:mt-[110px]'}`}
+        style={showLanding ? { display: 'none' } : undefined}
+      >
         {filtered.length === 0 ? (
           <div className="text-center py-20" style={{ gridColumn: '1 / -1' }}>
             <div className="text-[56px] mb-4" style={{ filter: 'grayscale(0.5)' }}>🔍</div>

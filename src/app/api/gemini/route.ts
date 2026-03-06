@@ -1,9 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { rateLimit } from '@/lib/rateLimit';
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
 export async function POST(req: NextRequest) {
+  // Rate Limit 체크
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || 'unknown';
+  const { allowed, remaining } = rateLimit(ip);
+
+  if (!allowed) {
+    return NextResponse.json(
+      { error: '요청 한도를 초과했습니다. 1분 후 다시 시도해주세요.' },
+      { status: 429, headers: { 'X-RateLimit-Remaining': '0' } }
+    );
+  }
+
   if (!GEMINI_API_KEY || GEMINI_API_KEY === 'your_gemini_api_key_here') {
     return NextResponse.json(
       { error: 'Gemini API 키가 설정되지 않았습니다. .env.local 파일을 확인하세요.' },
@@ -42,7 +54,9 @@ export async function POST(req: NextRequest) {
     const data = await response.json();
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
-    return NextResponse.json({ text });
+    return NextResponse.json({ text }, {
+      headers: { 'X-RateLimit-Remaining': String(remaining) }
+    });
   } catch (error) {
     console.error('Gemini route error:', error);
     return NextResponse.json({ error: '서버 오류가 발생했습니다.' }, { status: 500 });
